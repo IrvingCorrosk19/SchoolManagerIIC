@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ParentLogin } from './ParentLogin';
-import { Calendar, Book, AlertCircle, FileText, User, Clock, Download, ExternalLink, File } from 'lucide-react';
+import { Calendar, Book, AlertCircle, FileText, User, Clock, ExternalLink, File } from 'lucide-react';
 
 export function ParentPortal() {
   const [studentId, setStudentId] = useState<number | null>(null);
@@ -22,13 +22,7 @@ export function ParentPortal() {
   };
 
   // Mock data for teachers
-  const teachers = [
-    { id: 1, name: 'Prof. Martínez', subject: 'Matemáticas' },
-    { id: 2, name: 'Prof. Sánchez', subject: 'Ciencias' },
-    { id: 3, name: 'Prof. López', subject: 'Historia' },
-    { id: 4, name: 'Prof. Rodríguez', subject: 'Literatura' },
-    { id: 5, name: 'Prof. Gómez', subject: 'Inglés' }
-  ];
+
 
   // Mock data for grades by trimester
   const gradesByTrimester = {
@@ -467,38 +461,35 @@ export function ParentPortal() {
     { month: 'Abril', present: 19, absent: 1, late: 0 }
   ];
 
-  // Calculate average grade for current trimester
-  const calculateAverage = (grades) => {
+  type GradeItem = {
+    grade: number;
+  };
+  
+  const calculateAverage = (grades: GradeItem[]) => {
     const sum = grades.reduce((total, grade) => total + grade.grade, 0);
-    // Truncate to one decimal place (not rounding)
     return Math.floor((sum / grades.length) * 10) / 10;
   };
 
-  // Calculate final grade (average of all trimesters) for a subject
-  const calculateFinalGrade = (subject) => {
+  const calculateFinalGrade = (subject: string) => {
     const t1Grade = gradesByTrimester['1T'].find(g => g.subject === subject)?.grade || 0;
     const t2Grade = gradesByTrimester['2T'].find(g => g.subject === subject)?.grade || 0;
     const t3Grade = gradesByTrimester['3T'].find(g => g.subject === subject)?.grade || 0;
     
-    // Calculate average and truncate to one decimal place
     return Math.floor(((t1Grade + t2Grade + t3Grade) / 3) * 10) / 10;
   };
-
-  // Calculate average by activity type for a subject in the current trimester
-  const calculateAverageByType = (subject, type) => {
+  
+  const calculateAverageByType = (subject: string, type: string) => {
     const activities = activitiesByTrimester[activeTrimester].filter(
       a => a.subject === subject && a.type === type
     );
-    
+  
     if (activities.length === 0) return 0;
-    
+  
     const sum = activities.reduce((total, activity) => total + activity.grade, 0);
-    // Truncate to one decimal place
     return Math.floor((sum / activities.length) * 10) / 10;
   };
-
-  // Get file icon based on file type
-  const getFileIcon = (fileType) => {
+  
+  const getFileIcon = (fileType: string) => {
     switch (fileType) {
       case 'pdf':
         return <FileText size={16} className="text-red-500" />;
@@ -515,10 +506,10 @@ export function ParentPortal() {
         return <File size={16} className="text-gray-500" />;
     }
   };
-
+  
   const currentGrades = gradesByTrimester[activeTrimester];
   const averageGrade = calculateAverage(currentGrades);
-  const passStatus = parseFloat(averageGrade) >= 3.0 ? 'Aprobado' : 'Reprobado';
+  const passStatus = averageGrade >= 3.0 ? 'Aprobado' : 'Reprobado';
 
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden w-full">
